@@ -40,8 +40,8 @@ macro_rules! fetch_through_all_tokens {
             *next_token = response.1;
 
             println!("next_token {}\n", next_token);
+            println!(" itemsss ---- {:?}\n", items);
             result.append(&mut items);
-            println!(" items ---- {:?}\n", items);
 
             if next_token.is_empty() {
                 break;
