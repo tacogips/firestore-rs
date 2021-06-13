@@ -621,6 +621,8 @@ impl FirestoreClient {
     ) -> Result<Vec<Document>> {
         let next_token = "".to_owned();
         fetch_through_all_tokens!(Document, {
+            println!("inner next token{:?}", next_token);
+
             self.list_documents_chunk(
                 parent_path.clone(),
                 collection_id.clone(),
