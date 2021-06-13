@@ -34,12 +34,12 @@ macro_rules! fetch_through_all_tokens {
         loop {
             let response = $body;
 
-            println!("token {}", next_token);
+            println!("token {}\n", next_token);
 
             let mut items = response.0;
             *next_token = response.1;
 
-            println!("next_token {}", next_token);
+            println!("next_token {}\n", next_token);
             result.append(&mut items);
 
             if next_token.is_empty() {
