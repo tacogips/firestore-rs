@@ -41,6 +41,7 @@ macro_rules! fetch_through_all_tokens {
 
             println!("next_token {}\n", next_token);
             result.append(&mut items);
+            println!(" items ---- {:?}\n", items);
 
             if next_token.is_empty() {
                 break;
