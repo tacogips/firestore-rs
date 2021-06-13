@@ -29,7 +29,7 @@
 /// ```
 macro_rules! fetch_through_all_tokens {
     ($resp_type:ty, $body:expr) => {
-        let ref mut next_token = "".to_owned();
+        let mut next_token = "".to_owned();
         let mut result = Vec::<$resp_type>::new();
         loop {
             let response = $body;
@@ -37,7 +37,7 @@ macro_rules! fetch_through_all_tokens {
             println!("token {}\n", next_token);
 
             let mut items = response.0;
-            *next_token = response.1;
+            next_token = response.1;
 
             println!("next_token {}\n", next_token);
             println!(" itemsss ---- {:?}\n", items);
