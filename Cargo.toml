@@ -1,0 +1,7 @@
+[workspace]
+members = ["firestore","google-cloud-grpc-proto"]
+
+[profile.release]
+lto = true
+opt-level = 3
+
