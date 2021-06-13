@@ -1,6 +1,5 @@
 use super::query::QueryBuilder;
 use super::request;
-use crate::fetch_through_all_tokens;
 use crate::grpc::{
     auth::{auth_interceptor, scopes, TokenManager, TokenManagerBuilder},
     connection_point,
@@ -318,17 +317,30 @@ impl FirestoreClient {
         max_partition_count: i64,
         chunk_size: i32,
     ) -> Result<Vec<Cursor>> {
-        let next_token = "".to_owned();
-        fetch_through_all_tokens!(Cursor, {
-            self.partition_query_chunk(
-                document_path.clone(),
-                query.clone(),
-                max_partition_count,
-                chunk_size,
-                next_token.clone(),
-            )
-            .await?
-        });
+        //TODO(tacogips) to be procedual macro
+        let ref mut next_token = "".to_owned();
+        let mut result = Vec::<Cursor>::new();
+        loop {
+            let response = self
+                .partition_query_chunk(
+                    document_path.clone(),
+                    query.clone(),
+                    max_partition_count,
+                    chunk_size,
+                    next_token.clone(),
+                )
+                .await?;
+
+            let mut items = response.0;
+            *next_token = response.1;
+
+            result.append(&mut items);
+
+            if next_token.is_empty() {
+                break;
+            }
+        }
+        return Ok(result);
     }
 
     pub async fn partition_query_chunk(
@@ -619,19 +631,31 @@ impl FirestoreClient {
         field_mask: Option<Vec<String>>,
         transaction: Option<Vec<u8>>,
     ) -> Result<Vec<Document>> {
-        let next_token = "".to_owned();
-        fetch_through_all_tokens!(Document, {
-            self.list_documents_chunk(
-                parent_path.clone(),
-                collection_id.clone(),
-                order_by.clone(),
-                chunk_size.clone(),
-                field_mask.clone(),
-                transaction.clone(),
-                next_token.clone(),
-            )
-            .await?
-        });
+        let ref mut next_token = "".to_owned();
+        let mut result = Vec::<Document>::new();
+        loop {
+            let response = self
+                .list_documents_chunk(
+                    parent_path.clone(),
+                    collection_id.clone(),
+                    order_by.clone(),
+                    chunk_size.clone(),
+                    field_mask.clone(),
+                    transaction.clone(),
+                    next_token.clone(),
+                )
+                .await?;
+
+            let mut items = response.0;
+            *next_token = response.1;
+
+            result.append(&mut items);
+
+            if next_token.is_empty() {
+                break;
+            }
+        }
+        return Ok(result);
     }
 
     pub async fn list_documents_chunk(
@@ -674,17 +698,29 @@ impl FirestoreClient {
     where
         F: for<'a> FnMut(&'a String) -> bool + Copy,
     {
-        let next_token = "".to_owned();
-        fetch_through_all_tokens!(String, {
-            self.list_collection_ids_chunks(
-                project_id.clone(),
-                document_path.clone(),
-                chunk_size,
-                filter_fn,
-                next_token.clone(),
-            )
-            .await?
-        });
+        let ref mut next_token = "".to_owned();
+        let mut result = Vec::<String>::new();
+        loop {
+            let response = self
+                .list_collection_ids_chunks(
+                    project_id.clone(),
+                    document_path.clone(),
+                    chunk_size,
+                    filter_fn,
+                    next_token.clone(),
+                )
+                .await?;
+
+            let mut items = response.0;
+            *next_token = response.1;
+
+            result.append(&mut items);
+
+            if next_token.is_empty() {
+                break;
+            }
+        }
+        return Ok(result);
     }
 
     pub async fn list_collection_ids_chunks<F>(
