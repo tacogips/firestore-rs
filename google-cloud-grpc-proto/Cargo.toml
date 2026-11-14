@@ -1,0 +1,19 @@
+[package]
+name = "google-cloud-grpc-proto"
+version = "0.1.0"
+authors = ["tacogips <me@tacogips.me>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+prost = "0.7.0"
+prost-types = "0.7.0"
+tonic = { version = "0.4.0", features = ["tls", "tls-roots"]}
+
+[packge]
+build  = "build.rs"
+
+[build-dependencies]
+tonic-build = "0.4.*"
+
